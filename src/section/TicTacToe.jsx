@@ -5,8 +5,6 @@ import TicTacHistory from "../component/TicTacHistory";
 const TicTacToe = () => {
   const [squares, setSquares] = useState(Array(9).fill(null));
   const [xIsNext, setXIsNext] = useState(true);
-  const [history, setHistory] = useState([Array(9).fill(null)]);
-  const currentSquares = history[history.length - 1];
 
 
   function handleClick(i) {
@@ -20,20 +18,11 @@ const TicTacToe = () => {
       nextSquares[i] = "O";
     }
 
-    setHistory([...history, nextSquares]);
+    setSquares(nextSquares);
     setXIsNext(!xIsNext);
-
-    const moves = history.map((squares, move) => {
-      let description;
-
-      if (move > 0) {
-        description = "Go to move #" + move;
-      } else {
-        description = "Go to game start";
-      }
-    })
   }
 
+  // for next move
   const winner = calculateWinner(squares);
   let status;
 
@@ -67,7 +56,9 @@ const TicTacToe = () => {
           </div>
         </div>
 
-        <TicTacHistory />
+        <div>
+          <ol>{/*todo*/}</ol>
+        </div>
       </div>
     </section>
   )
