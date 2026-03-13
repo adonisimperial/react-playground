@@ -1,16 +1,25 @@
 import { useState } from "react"
 import Square from "../component/Square"
-import TicTacHistory from "../component/TicTacHistory";
 
 const TicTacToe = () => {
+  //const [xIsNext, setXIsNext] = useState(true);
+  /* HISTORY REFACTOR: REPLACED
   const [squares, setSquares] = useState(Array(9).fill(null));
-  const [xIsNext, setXIsNext] = useState(true);
-
+  */
+  const [history, setHistory] = useState([Array(9).fill(null)]);
+  const [currentMove, setCurrentMove] = useState(0);
+  const xIsNext = currentMove % 2 === 0;
+  const currentSquares = history[currentMove];
 
   function handleClick(i) {
+    /* HISTORY REFACTOR: REPLACED
     if (squares[i] || calculateWinner(squares)) return;
 
     const nextSquares = squares.slice();
+    */
+    if (currentSquares[i] || calculateWinner(currentSquares)) return;
+
+    const nextSquares = currentSquares.slice();
 
     if (xIsNext) {
       nextSquares[i] = "X";
@@ -18,12 +27,26 @@ const TicTacToe = () => {
       nextSquares[i] = "O";
     }
 
+    /* HISTORY REFACTOR: REPLACED
     setSquares(nextSquares);
-    setXIsNext(!xIsNext);
+    */
+    const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
+    setHistory(nextHistory);
+    setCurrentMove(nextHistory.length - 1);
+    //setXIsNext(!xIsNext);
+  }
+
+  // HISTORY REFACTOR: ADDED
+  function jumpTo(nextMove) {
+    setCurrentMove(nextMove)
+    //setXIsNext(nextMove % 2 === 0);
   }
 
   // for next move
+  /* HISTORY REFACTOR: REPLACED
   const winner = calculateWinner(squares);
+  */
+  const winner = calculateWinner(currentSquares);
   let status;
 
   if (winner) {
@@ -32,6 +55,21 @@ const TicTacToe = () => {
     status = "Next player: " + (xIsNext ? "X" : "O");
   }
 
+  // HISTORY REFACTORY: ADDED
+  const moves = history.map((squares, move) => {
+    let description;
+    if (move > 0) {
+      description = 'Go to move #' + move;
+    } else {
+      description = 'Go to game start';
+    }
+    return (
+      <li key={move}>
+        <button onClick={() => jumpTo(move)}>{description}</button>
+      </li>
+    );
+  });
+
   return (
     <section>
       <h1>TicTacToe</h1>
@@ -39,6 +77,7 @@ const TicTacToe = () => {
       <p>{status}</p>
       <div className="game-board">
         <div>
+          {/* HISTORY REFACTOR: REPLACING SQUARES TO CURRENTSQUARES TO GET THE HISTORY REFACTOR ABOVE
           <div className="board-row">
             <Square value={squares[0]} onSquareClick={() => handleClick(0)} />
             <Square value={squares[1]} onSquareClick={() => handleClick(1)} />
@@ -54,10 +93,27 @@ const TicTacToe = () => {
             <Square value={squares[7]} onSquareClick={() => handleClick(7)} />
             <Square value={squares[8]} onSquareClick={() => handleClick(8)} />
           </div>
+          */}
+          <div className="board-row">
+            <Square value={currentSquares[0]} onSquareClick={() => handleClick(0)} />
+            <Square value={currentSquares[1]} onSquareClick={() => handleClick(1)} />
+            <Square value={currentSquares[2]} onSquareClick={() => handleClick(2)} />
+          </div>
+          <div className="board-row">
+            <Square value={currentSquares[3]} onSquareClick={() => handleClick(3)} />
+            <Square value={currentSquares[4]} onSquareClick={() => handleClick(4)} />
+            <Square value={currentSquares[5]} onSquareClick={() => handleClick(5)} />
+          </div>
+          <div className="board-row">
+            <Square value={currentSquares[6]} onSquareClick={() => handleClick(6)} />
+            <Square value={currentSquares[7]} onSquareClick={() => handleClick(7)} />
+            <Square value={currentSquares[8]} onSquareClick={() => handleClick(8)} />
+          </div>
         </div>
 
         <div>
-          <ol>{/*todo*/}</ol>
+          {/* HISTORY REFACTOR: ADDED */}
+          <ol>{moves}</ol>
         </div>
       </div>
     </section>
